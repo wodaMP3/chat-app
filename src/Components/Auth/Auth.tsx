@@ -1,7 +1,8 @@
 import { RootState } from "@reduxjs/toolkit/query";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux"
-import { loginStart } from "../store/authSlice";
+import { loginStart, loginSuccess } from "../store/authSlice";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 
 const Login: React.FC = () => {
@@ -14,5 +15,11 @@ const Login: React.FC = () => {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         dispatch(loginStart());
+
+    try {
+        const userCredit = await signInWithEmailAndPassword(auth, email, passwords);
+        dispatch(loginSuccess(userCredit.user));
+        
+    }
     }
 }
