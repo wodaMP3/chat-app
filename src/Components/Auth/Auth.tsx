@@ -1,5 +1,6 @@
 import { RootState } from "@reduxjs/toolkit/query";
 import React, { useState } from "react";
+import { auth } from '../../firebase';
 import { useDispatch, useSelector } from "react-redux"
 import { loginStart, loginSuccess } from "../store/authSlice";
 import { signInWithEmailAndPassword } from "firebase/auth";
