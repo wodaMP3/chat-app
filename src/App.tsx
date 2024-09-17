@@ -1,9 +1,10 @@
+import Login from "./Components/Auth/Auth";
 
 
 const App = () => {
   return (
     <div className="">
-      AI-CHAT-APP!
+      <Login />
     </div>
   )
 }
