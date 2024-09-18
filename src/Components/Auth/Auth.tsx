@@ -1,73 +1,42 @@
-// import { RootState } from "@reduxjs/toolkit/query";
-// import React, { useState } from "react";
-// import { auth } from '../../firebase';
-// import { useDispatch, useSelector } from "react-redux"
-// import { loginFailure, loginStart, loginSuccess, logout } from "../store/authSlice";
-// import { signInWithEmailAndPassword, signOut } from "firebase/auth";
-// import { FirebaseError } from "firebase/app";
+import { useEffect, useState } from "react";
+import { auth } from '../../firebase';
+import { GoogleAuthProvider, onAuthStateChanged, signInWithRedirect, User } from "firebase/auth";
 
 
-// const Login: React.FC = () => {
-//     const dispatch = useDispatch();
-//     const { user, loading, error } = useSelector((state: RootState) => state.auth);  
+const Login: React.FC = () => {
+    const [user, setUser] = useState<User | null>(null);
 
-//     const [email, setEmail] = useState('');
-//     const [passwords, setPasswords] = useState('');
+    useEffect(() => {
+        const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+        });
 
-//     const handleLogin = async (e: React.FormEvent) => {
-//         e.preventDefault();
-//         dispatch(loginStart());
+        return () => {
+            unSubscribe();
+        }
+    }, []);
 
-//     try {
-//         const userCredit = await signInWithEmailAndPassword(auth, email, passwords);
-//         dispatch(loginSuccess(userCredit.user));
-        
-//     } catch (error) {
-//         const firebaseError = error as FirebaseError;
-//         dispatch(loginFailure(firebaseError.message))
-//     }
-//   };
+    const googleSignIn = () => {
+        const provider = new GoogleAuthProvider();
+        signInWithRedirect(auth, provider);
+    };
 
-//   const handleLogout = async () => {
-//     await signOut(auth);
-//     dispatch(logout());
-//   };
+    const googleSignOut = () => {
+        auth.signOut();
+    }
 
-//   return (
-//     <div>
-//       {user ? (
-//         <div>
-//           <h1>Welcome, {user.email}</h1>
-//           <button onClick={handleLogout}>Logout</button>
-//         </div>
-//       ) : (
-//         <form onSubmit={handleLogin}>
-//           <div>
-//             <label>Email</label>
-//             <input
-//               type="email"
-//               value={email}
-//               onChange={(e) => setEmail(e.target.value)}
-//             />
-//           </div>
-//           <div>
-//             <label>Password</label>
-//             <input
-//               type="password"
-//               value={passwords}
-//               onChange={(e) => setPasswords(e.target.value)}
-//             />
-//           </div>
-//           <button type="submit" disabled={loading}>
-//             {loading ? 'Logging in...' : 'Login'}
-//           </button>
-//           {error && <p className="bg-blue-500">{error}</p>}
-//         </form>
-//       )}
-//     </div>
-//   );
-// };
+    return (
+        <div>
+          {user ? (
+            <div>
+              <h1>Welcome, {user.displayName}</h1>
+              <button onClick={googleSignOut}>Sign Out</button>
+            </div>
+          ) : (
+            <button onClick={googleSignIn}>Sign In with Google</button>
+          )}
+        </div>
+      );
+}
 
-// export default Login;
-
-
+export default Login;
