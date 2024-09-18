@@ -1,4 +1,4 @@
-import Login from "./Components/Auth/Auth";
+import Login from "./Components/Login/Login";
 
 
 const App = () => {
