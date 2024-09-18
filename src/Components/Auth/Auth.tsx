@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
-import { auth } from '../../firebase';
-import { GoogleAuthProvider, onAuthStateChanged, signInWithRedirect, User } from "firebase/auth";
+import { auth } from '../../../firebase';
+import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, User } from "firebase/auth";
 
 
 const Login: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
+            if (currentUser) {
+                console.log('User signed in', currentUser)
+            } else {
+                console.log('not signed')
+            }
             setUser(currentUser);
+            setLoading(false);
+        }, (error)=> {
+            console.error('Error in onAuthState', error)
         });
 
         return () => {
@@ -18,11 +27,17 @@ const Login: React.FC = () => {
 
     const googleSignIn = () => {
         const provider = new GoogleAuthProvider();
-        signInWithRedirect(auth, provider);
+        signInWithPopup(auth, provider).catch((error) => {
+            console.error('error during signWithRedirect', error)
+        });
     };
 
     const googleSignOut = () => {
         auth.signOut();
+    }
+
+    if (loading) {
+        return <div>loading...</div>
     }
 
     return (
